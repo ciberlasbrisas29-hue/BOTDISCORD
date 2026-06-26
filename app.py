@@ -1,51 +1,65 @@
+cat > /home/claude/streamplay/app.py << 'PYEOF'
 import os
 import re
 import requests
 import subprocess
-from urllib.parse import urljoin, urlparse, quote, unquote
+from urllib.parse import urljoin, urlparse, quote
 from flask import Flask, request, Response, jsonify, stream_with_context
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Allow Fire TV player to call this API
+CORS(app)
 
-# ── HEADERS que simulan un navegador real ────────────────────────────────────
 BROWSER_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
     "Accept": "*/*",
     "Accept-Language": "es-419,es;q=0.9",
-    "Accept-Encoding": "identity",  # No gzip so we can rewrite URLs easily
+    "Accept-Encoding": "identity",
     "Connection": "keep-alive",
 }
-
-CHUNK_SIZE = 1024 * 64  # 64 KB chunks for streaming
+CHUNK_SIZE = 1024 * 64
 
 
 def is_youtube(url):
     return "youtube.com" in url or "youtu.be" in url
 
-
 def is_m3u8(url):
     u = url.lower().split("?")[0]
     return u.endswith(".m3u8") or u.endswith(".m3u")
 
-
 def is_mpd(url):
     return url.lower().split("?")[0].endswith(".mpd")
 
+def extract_yt_id(url):
+    """Extrae el video ID de YouTube."""
+    patterns = [
+        r'youtu\.be/([^?&/]+)',
+        r'youtube\.com/watch\?.*v=([^&]+)',
+        r'youtube\.com/embed/([^?&/]+)',
+        r'youtube\.com/shorts/([^?&/]+)',
+    ]
+    for p in patterns:
+        m = re.search(p, url)
+        if m:
+            return m.group(1)
+    return None
 
-# ── /resolve — dado cualquier URL, devuelve el stream directo ────────────────
+
+# ── /resolve ─────────────────────────────────────────────────────────────────
 @app.route("/resolve")
 def resolve():
     url = request.args.get("url", "").strip()
     if not url:
         return jsonify({"error": "No URL provided"}), 400
 
-    # YouTube → yt-dlp
+    # YouTube → devolver embed ID (el player lo maneja con iframe)
     if is_youtube(url):
-        return resolve_youtube(url)
+        vid_id = extract_yt_id(url)
+        if vid_id:
+            return jsonify({"type": "youtube", "videoId": vid_id})
+        return jsonify({"error": "No se pudo extraer el ID de YouTube"}), 422
 
-    # m3u8/mpd directo → devolver proxied
+    # m3u8/mpd directo
     if is_m3u8(url) or is_mpd(url):
         proxy_url = f"/proxy/m3u8?url={quote(url, safe='')}"
         return jsonify({
@@ -54,89 +68,104 @@ def resolve():
             "direct": url,
         })
 
-    # Página web con player embebido → intentar extraer con yt-dlp
+    # Página web → intentar múltiples métodos
     return resolve_page(url)
 
 
-def resolve_youtube(url):
-    try:
-        result = subprocess.run(
-            ["yt-dlp", "-f", "best[ext=mp4]/best", "-g", "--no-playlist", url],
-            capture_output=True, text=True, timeout=30
-        )
-        if result.returncode == 0:
-            stream_url = result.stdout.strip().split("\n")[0]
-            return jsonify({"type": "mp4", "url": stream_url, "direct": stream_url})
-
-        # Fallback: probar con formato de stream HLS
-        result2 = subprocess.run(
-            ["yt-dlp", "-f", "95/94/93/92/best", "-g", "--no-playlist", url],
-            capture_output=True, text=True, timeout=30
-        )
-        if result2.returncode == 0:
-            stream_url = result2.stdout.strip().split("\n")[0]
-            return jsonify({"type": "mp4", "url": stream_url, "direct": stream_url})
-
-        return jsonify({"error": "No se pudo extraer el stream de YouTube: " + result.stderr[:200]}), 422
-    except subprocess.TimeoutExpired:
-        return jsonify({"error": "Timeout extrayendo YouTube"}), 504
-    except FileNotFoundError:
-        return jsonify({"error": "yt-dlp no instalado en el servidor"}), 500
-
-
 def resolve_page(url):
-    """Intenta extraer un stream de una página web usando yt-dlp."""
+    # Método 1: yt-dlp
     try:
         result = subprocess.run(
-            ["yt-dlp", "-f", "best", "-g", "--no-playlist", url],
+            ["yt-dlp", "-f", "best", "-g", "--no-playlist",
+             "--no-check-certificates", url],
             capture_output=True, text=True, timeout=30
         )
         if result.returncode == 0:
             stream_url = result.stdout.strip().split("\n")[0]
-            stype = "hls" if is_m3u8(stream_url) else "mp4"
-            if is_m3u8(stream_url):
-                proxy_url = f"/proxy/m3u8?url={quote(stream_url, safe='')}&referer={quote(url, safe='')}"
-                return jsonify({"type": stype, "url": proxy_url, "direct": stream_url})
-            return jsonify({"type": stype, "url": stream_url, "direct": stream_url})
+            if stream_url.startswith("http"):
+                stype = "hls" if is_m3u8(stream_url) else "mp4"
+                if is_m3u8(stream_url):
+                    proxy_url = f"/proxy/m3u8?url={quote(stream_url, safe='')}&referer={quote(url, safe='')}"
+                    return jsonify({"type": stype, "url": proxy_url, "direct": stream_url})
+                return jsonify({"type": stype, "url": stream_url, "direct": stream_url})
+    except Exception:
+        pass
 
-        # Si yt-dlp falla, intenta fetch directo buscando m3u8 en el HTML/JS
-        extracted = extract_m3u8_from_page(url)
-        if extracted:
-            proxy_url = f"/proxy/m3u8?url={quote(extracted, safe='')}&referer={quote(url, safe='')}"
-            return jsonify({"type": "hls", "url": proxy_url, "direct": extracted})
+    # Método 2: fetch + regex en HTML/JS
+    extracted = extract_m3u8_from_page(url)
+    if extracted:
+        proxy_url = f"/proxy/m3u8?url={quote(extracted, safe='')}&referer={quote(url, safe='')}"
+        return jsonify({"type": "hls", "url": proxy_url, "direct": extracted})
 
-        return jsonify({"error": "No se encontró stream reproducible en esa URL"}), 422
-    except subprocess.TimeoutExpired:
-        return jsonify({"error": "Timeout resolviendo la página"}), 504
+    # Método 3: seguir redirects del parámetro ?r= (base64)
+    extracted2 = resolve_r_param(url)
+    if extracted2:
+        proxy_url = f"/proxy/m3u8?url={quote(extracted2, safe='')}&referer={quote(url, safe='')}"
+        return jsonify({"type": "hls", "url": proxy_url, "direct": extracted2})
+
+    return jsonify({"error": "No se encontró stream reproducible. Prueba pegando el .m3u8 directo."}), 422
+
+
+def resolve_r_param(url):
+    """Maneja URLs con ?r=BASE64 como las de futbol-libres."""
+    import base64
+    parsed = urlparse(url)
+    params = dict(p.split("=", 1) for p in parsed.query.split("&") if "=" in p)
+    r_val = params.get("r", "")
+    if not r_val:
+        return None
+    try:
+        inner_url = base64.b64decode(r_val + "==").decode("utf-8")
+        if inner_url.startswith("http"):
+            # Intentar extraer m3u8 de la URL interna
+            result = extract_m3u8_from_page(inner_url)
+            if result:
+                return result
+            # yt-dlp en la URL interna
+            try:
+                res = subprocess.run(
+                    ["yt-dlp", "-f", "best", "-g", "--no-playlist", inner_url],
+                    capture_output=True, text=True, timeout=30
+                )
+                if res.returncode == 0:
+                    s = res.stdout.strip().split("\n")[0]
+                    if s.startswith("http"):
+                        return s
+            except Exception:
+                pass
+    except Exception:
+        pass
+    return None
 
 
 def extract_m3u8_from_page(url):
-    """Scrapea el HTML/JS de la página buscando URLs m3u8."""
+    """Scrapea HTML/JS buscando URLs m3u8."""
     try:
-        referer = url
         parsed = urlparse(url)
         origin = f"{parsed.scheme}://{parsed.netloc}"
-        headers = {**BROWSER_HEADERS, "Referer": referer, "Origin": origin}
+        headers = {**BROWSER_HEADERS, "Referer": url, "Origin": origin}
         r = requests.get(url, headers=headers, timeout=15, allow_redirects=True)
         text = r.text
-        # Buscar patrones comunes
         patterns = [
             r'["\']?(https?://[^"\'>\s]+\.m3u8[^"\'>\s]*)["\']?',
             r'source["\']?\s*[:=]\s*["\']?(https?://[^"\'>\s]+\.m3u8[^"\'>\s]*)',
             r'file\s*[:=]\s*["\']?(https?://[^"\'>\s]+\.m3u8[^"\'>\s]*)',
             r'hls_src\s*=\s*["\']?(https?://[^"\'>\s]+\.m3u8[^"\'>\s]*)',
             r'src\s*[:=]\s*["\']?(https?://[^"\'>\s]+\.m3u8[^"\'>\s]*)',
+            r'url\s*[:=]\s*["\']?(https?://[^"\'>\s]+\.m3u8[^"\'>\s]*)',
         ]
         for pat in patterns:
             m = re.search(pat, text, re.IGNORECASE)
             if m:
-                return m.group(1).strip("'\"")
+                found = m.group(1).strip("'\"")
+                if found.startswith("http"):
+                    return found
     except Exception:
         pass
     return None
 
 
-# ── /proxy/m3u8 — proxea el .m3u8 reescribiendo URLs internas ───────────────
+# ── /proxy/m3u8 ───────────────────────────────────────────────────────────────
 @app.route("/proxy/m3u8")
 def proxy_m3u8():
     url = request.args.get("url", "").strip()
@@ -163,13 +192,11 @@ def proxy_m3u8():
     except Exception as e:
         return f"Error fetching m3u8: {e}", 502
 
-    # Reescribir URLs relativas y absolutas dentro del m3u8
     lines = content.splitlines()
     new_lines = []
     for line in lines:
         line = line.strip()
         if line.startswith("#"):
-            # Reescribir URI= dentro de tags EXT-X-KEY, EXT-X-MAP, etc.
             def rewrite_uri(m):
                 inner = m.group(1)
                 if inner.startswith("http"):
@@ -185,14 +212,12 @@ def proxy_m3u8():
         elif line == "":
             new_lines.append(line)
         elif line.startswith("http"):
-            # URL absoluta — puede ser sub-playlist o segmento .ts
             if is_m3u8(line):
                 proxied = f"/proxy/m3u8?url={quote(line, safe='')}&referer={quote(url, safe='')}"
             else:
                 proxied = f"/proxy/segment?url={quote(line, safe='')}&referer={quote(url, safe='')}"
             new_lines.append(proxied)
         else:
-            # URL relativa
             full = urljoin(base_url, line)
             if is_m3u8(line):
                 proxied = f"/proxy/m3u8?url={quote(full, safe='')}&referer={quote(url, safe='')}"
@@ -205,7 +230,7 @@ def proxy_m3u8():
                     headers={"Access-Control-Allow-Origin": "*", "Cache-Control": "no-cache"})
 
 
-# ── /proxy/segment — proxea segmentos .ts / .aac / claves AES ───────────────
+# ── /proxy/segment ────────────────────────────────────────────────────────────
 @app.route("/proxy/segment")
 def proxy_segment():
     url = request.args.get("url", "").strip()
@@ -223,62 +248,48 @@ def proxy_segment():
         headers["Referer"] = origin + "/"
         headers["Origin"] = origin
 
-    # Pasar Range si el cliente lo pide
     if "Range" in request.headers:
         headers["Range"] = request.headers["Range"]
 
     try:
         r = requests.get(url, headers=headers, stream=True, timeout=20)
-
         def generate():
             for chunk in r.iter_content(CHUNK_SIZE):
                 yield chunk
-
-        resp_headers = {
-            "Access-Control-Allow-Origin": "*",
-            "Cache-Control": "no-cache",
-        }
         ct = r.headers.get("Content-Type", "video/MP2T")
         return Response(stream_with_context(generate()),
-                        status=r.status_code,
-                        content_type=ct,
-                        headers=resp_headers)
+                        status=r.status_code, content_type=ct,
+                        headers={"Access-Control-Allow-Origin": "*", "Cache-Control": "no-cache"})
     except Exception as e:
         return f"Segment error: {e}", 502
 
 
-# ── /proxy/direct — proxea cualquier URL directo (mp4, etc.) ────────────────
+# ── /proxy/direct ─────────────────────────────────────────────────────────────
 @app.route("/proxy/direct")
 def proxy_direct():
     url = request.args.get("url", "").strip()
     referer = request.args.get("referer", "")
     if not url:
         return "No URL", 400
-
     parsed = urlparse(url)
     origin = f"{parsed.scheme}://{parsed.netloc}"
     headers = {**BROWSER_HEADERS, "Referer": referer or origin + "/", "Origin": origin}
     if "Range" in request.headers:
         headers["Range"] = request.headers["Range"]
-
     try:
         r = requests.get(url, headers=headers, stream=True, timeout=20)
         ct = r.headers.get("Content-Type", "video/mp4")
-        status = r.status_code
-
         def generate():
             for chunk in r.iter_content(CHUNK_SIZE):
                 yield chunk
-
         return Response(stream_with_context(generate()),
-                        status=status,
-                        content_type=ct,
+                        status=r.status_code, content_type=ct,
                         headers={"Access-Control-Allow-Origin": "*"})
     except Exception as e:
         return f"Direct proxy error: {e}", 502
 
 
-# ── Health check ─────────────────────────────────────────────────────────────
+# ── Health ────────────────────────────────────────────────────────────────────
 @app.route("/")
 def health():
     return jsonify({"status": "ok", "service": "StreamPlay Proxy"})
@@ -287,3 +298,11 @@ def health():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+PYEOF
+
+{
+  "returncode" : 0,
+  "stdout" : "",
+  "stderr" : ""
+}
+
