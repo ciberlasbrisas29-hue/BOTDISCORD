@@ -288,6 +288,31 @@ def proxy_direct():
         return f"Direct proxy error: {e}", 502
 
 
+
+# ── /check — verifica si un stream está vivo ─────────────────────────────────
+@app.route("/check")
+def check_stream():
+    url = request.args.get("url", "").strip()
+    if not url:
+        return jsonify({"ok": False, "error": "No URL"}), 400
+
+    parsed = urlparse(url)
+    origin = f"{parsed.scheme}://{parsed.netloc}"
+    headers = {**BROWSER_HEADERS, "Referer": origin + "/", "Origin": origin}
+
+    try:
+        r = requests.head(url, headers=headers, timeout=6, allow_redirects=True)
+        ok = r.status_code < 400
+        return jsonify({"ok": ok, "status": r.status_code})
+    except Exception as e:
+        try:
+            r = requests.get(url, headers=headers, timeout=6, stream=True)
+            ok = r.status_code < 400
+            r.close()
+            return jsonify({"ok": ok, "status": r.status_code})
+        except Exception as e2:
+            return jsonify({"ok": False, "error": str(e2)})
+
 # ── Health ────────────────────────────────────────────────────────────────────
 @app.route("/")
 def health():
