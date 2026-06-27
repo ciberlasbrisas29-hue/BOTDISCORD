@@ -10,126 +10,126 @@
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #0a0c10; --surface: #13161d; --panel: #1a1e28; --border: #2a2f3e;
-    --accent: #00d4ff; --accent2: #0055ff; --text: #e8eaf0; --muted: #6b7280;
-    --danger: #ff4f4f; --success: #22d3a5; --font: 'Inter', system-ui, sans-serif;
-    --focus-ring: 0 0 0 3px rgba(0,212,255,.45);
+    --bg:#0a0c10;--surface:#13161d;--panel:#1a1e28;--border:#2a2f3e;
+    --accent:#00d4ff;--accent2:#0055ff;--text:#e8eaf0;--muted:#6b7280;
+    --danger:#ff4f4f;--success:#22d3a5;--font:'Inter',system-ui,sans-serif;
+    --focus-ring:0 0 0 3px rgba(0,212,255,.45);
   }
-  html, body { background: var(--bg); color: var(--text); font-family: var(--font); height: 100%; overflow: hidden; user-select: none; }
-
-  #app { display: grid; grid-template-rows: auto 1fr auto; height: 100vh; }
+  html,body{background:var(--bg);color:var(--text);font-family:var(--font);height:100%;overflow:hidden;user-select:none;}
+  #app{display:grid;grid-template-rows:auto auto 1fr auto;height:100vh;}
 
   /* HEADER */
-  header { display: flex; align-items: center; gap: 12px; padding: 14px 32px; background: linear-gradient(180deg, rgba(10,12,16,.98) 0%, transparent 100%); z-index: 10; position: relative; }
-  .logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 700; flex-shrink: 0; color: var(--text); }
-  .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+  header{display:flex;align-items:center;gap:12px;padding:14px 32px;background:linear-gradient(180deg,rgba(10,12,16,.98) 0%,transparent 100%);z-index:10;position:relative;}
+  .logo{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:700;flex-shrink:0;}
+  .logo-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+  .url-bar{flex:1;display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:0 14px;transition:border-color .2s;}
+  .url-bar:focus-within{border-color:var(--accent);box-shadow:var(--focus-ring);}
+  .url-bar svg{color:var(--muted);flex-shrink:0;}
+  #url-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font);font-size:14px;padding:13px 0;caret-color:var(--accent);}
+  #url-input::placeholder{color:var(--muted);}
+  #play-btn{display:flex;align-items:center;gap:8px;padding:12px 24px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;border-radius:9px;color:#fff;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;flex-shrink:0;transition:opacity .15s,transform .1s;}
+  #play-btn:hover{opacity:.85;}
+  #play-btn:focus,#play-btn.focused{outline:none;box-shadow:var(--focus-ring);}
+  #play-btn:active{transform:scale(.97);}
+  #play-btn:disabled{opacity:.4;cursor:not-allowed;}
 
-  .url-bar { flex: 1; display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; padding: 0 14px; transition: border-color .2s; }
-  .url-bar:focus-within { border-color: var(--accent); box-shadow: var(--focus-ring); }
-  .url-bar svg { color: var(--muted); flex-shrink: 0; }
-  #url-input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-family: var(--font); font-size: 14px; padding: 13px 0; caret-color: var(--accent); }
-  #url-input::placeholder { color: var(--muted); }
-
-  #play-btn { display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, var(--accent2), var(--accent)); border: none; border-radius: 9px; color: #fff; font-family: var(--font); font-size: 14px; font-weight: 600; cursor: pointer; flex-shrink: 0; transition: opacity .15s, transform .1s; }
-  #play-btn:hover { opacity: .85; }
-  #play-btn:focus, #play-btn.focused { outline: none; box-shadow: var(--focus-ring); }
-  #play-btn:active { transform: scale(.97); }
-  #play-btn:disabled { opacity: .4; cursor: not-allowed; }
-
-  /* PROXY CONFIG */
-  #proxy-bar { display: flex; align-items: center; gap: 8px; padding: 0 32px 10px; }
-  #proxy-input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 7px; padding: 7px 12px; color: var(--muted); font-family: var(--font); font-size: 12px; outline: none; transition: border-color .2s; }
-  #proxy-input:focus { border-color: var(--accent); color: var(--text); }
-  #proxy-input::placeholder { color: #3a3f50; }
-  .proxy-label { font-size: 11px; color: var(--muted); flex-shrink: 0; }
-  #proxy-status { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background .3s; }
-  #proxy-status.ok { background: var(--success); }
-  #proxy-status.error { background: var(--danger); }
+  /* PROXY BAR */
+  #proxy-bar{display:flex;align-items:center;gap:8px;padding:0 32px 10px;}
+  #proxy-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:7px 12px;color:var(--muted);font-family:var(--font);font-size:12px;outline:none;transition:border-color .2s;}
+  #proxy-input:focus{border-color:var(--accent);color:var(--text);}
+  #proxy-input::placeholder{color:#3a3f50;}
+  .proxy-label{font-size:11px;color:var(--muted);flex-shrink:0;}
+  #proxy-status{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background .3s;}
+  #proxy-status.ok{background:var(--success);}
+  #proxy-status.error{background:var(--danger);}
 
   /* MAIN */
-  main { position: relative; overflow: hidden; background: #000; }
-  #video-wrap { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-  video { width: 100%; height: 100%; object-fit: contain; display: block; }
+  main{position:relative;overflow:hidden;background:#000;}
+  #video-wrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+  video{width:100%;height:100%;object-fit:contain;display:block;}
+
+  /* YOUTUBE IFRAME */
+  #yt-wrap{position:absolute;inset:0;display:none;background:#000;}
+  #yt-wrap.show{display:block;}
+  #yt-frame{width:100%;height:100%;border:none;}
 
   /* PLACEHOLDER */
-  #placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: var(--bg); pointer-events: none; }
-  #placeholder.hidden { display: none; }
-  .ph-icon { width: 80px; height: 80px; border-radius: 50%; background: var(--panel); display: flex; align-items: center; justify-content: center; color: var(--accent); border: 2px solid var(--border); }
-  .ph-title { font-size: 22px; font-weight: 600; }
-  .ph-sub { font-size: 13px; color: var(--muted); text-align: center; max-width: 400px; line-height: 1.6; }
-  .format-pills { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
-  .pill { background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 3px 11px; font-size: 11px; color: var(--muted); }
+  #placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:var(--bg);pointer-events:none;}
+  #placeholder.hidden{display:none;}
+  .ph-icon{width:80px;height:80px;border-radius:50%;background:var(--panel);display:flex;align-items:center;justify-content:center;color:var(--accent);border:2px solid var(--border);}
+  .ph-title{font-size:22px;font-weight:600;}
+  .ph-sub{font-size:13px;color:var(--muted);text-align:center;max-width:420px;line-height:1.6;}
+  .format-pills{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;}
+  .pill{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:3px 11px;font-size:11px;color:var(--muted);}
 
-  /* RESOLVING OVERLAY */
-  #resolving { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 16px; background: rgba(10,12,16,.85); z-index: 40; }
-  #resolving.show { display: flex; }
-  .res-text { font-size: 15px; color: var(--text); font-weight: 500; }
-  .res-sub { font-size: 12px; color: var(--muted); }
-  .spin-ring { width: 48px; height: 48px; border: 3px solid rgba(255,255,255,.1); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  /* RESOLVING */
+  #resolving{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:rgba(10,12,16,.85);z-index:40;}
+  #resolving.show{display:flex;}
+  .res-text{font-size:15px;color:var(--text);font-weight:500;}
+  .res-sub{font-size:12px;color:var(--muted);}
+  .spin-ring{width:48px;height:48px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
 
-  /* SPINNER (buffering) */
-  #spinner { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,.4); z-index: 25; pointer-events: none; }
-  #spinner.show { display: flex; }
+  /* SPINNER */
+  #spinner{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.4);z-index:25;pointer-events:none;}
+  #spinner.show{display:flex;}
 
-  /* ERROR TOAST */
-  #error-toast { position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--danger); color: #fff; padding: 11px 22px; border-radius: 8px; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity .3s, transform .3s; pointer-events: none; z-index: 50; white-space: nowrap; max-width: 90vw; text-align: center; }
-  #error-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  /* TOASTS */
+  #error-toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--danger);color:#fff;padding:11px 22px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:50;white-space:nowrap;max-width:90vw;text-align:center;}
+  #error-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  #success-toast{position:absolute;top:20px;left:50%;transform:translateX(-50%) translateY(-10px);background:var(--success);color:#0a0c10;padding:8px 18px;border-radius:8px;font-size:12px;font-weight:600;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:50;white-space:nowrap;}
+  #success-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-  /* SUCCESS TOAST */
-  #success-toast { position: absolute; top: 20px; left: 50%; transform: translateX(-50%) translateY(-10px); background: var(--success); color: #0a0c10; padding: 8px 18px; border-radius: 8px; font-size: 12px; font-weight: 600; opacity: 0; transition: opacity .3s, transform .3s; pointer-events: none; z-index: 50; white-space: nowrap; }
-  #success-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* STATUS BADGE */
-  #status-badge { position: absolute; top: 14px; right: 16px; display: flex; align-items: center; gap: 6px; background: rgba(10,12,16,.8); border: 1px solid var(--border); border-radius: 20px; padding: 4px 11px; font-size: 11px; font-weight: 600; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 20; }
-  #status-badge.show { opacity: 1; }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
-  .dot.live { background: var(--danger); animation: pulse 1.4s infinite; }
-  .dot.vod { background: var(--success); }
+  /* STATUS */
+  #status-badge{position:absolute;top:14px;right:16px;display:flex;align-items:center;gap:6px;background:rgba(10,12,16,.8);border:1px solid var(--border);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:20;}
+  #status-badge.show{opacity:1;}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0;}
+  .dot.live{background:var(--danger);animation:pulse 1.4s infinite;}
+  .dot.vod{background:var(--success);}
+  .dot.yt{background:#ff0000;}
 
   /* CONTROLS */
-  #controls { position: absolute; bottom: 0; left: 0; right: 0; padding: 14px 32px 18px; background: linear-gradient(0deg, rgba(0,0,0,.92) 0%, transparent 100%); display: flex; flex-direction: column; gap: 9px; opacity: 0; transition: opacity .3s; z-index: 30; }
-  #controls.visible { opacity: 1; }
-  #progress-wrap { display: flex; align-items: center; gap: 10px; }
-  #progress { flex: 1; -webkit-appearance: none; appearance: none; height: 5px; background: rgba(255,255,255,.18); border-radius: 3px; outline: none; cursor: pointer; }
-  #progress::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; border-radius: 50%; background: var(--accent); cursor: pointer; }
-  #progress:focus, #progress.focused { box-shadow: var(--focus-ring); }
-  .time-label { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; flex-shrink: 0; min-width: 38px; }
-  .ctrl-row { display: flex; align-items: center; justify-content: space-between; }
-  .ctrl-left, .ctrl-right { display: flex; align-items: center; gap: 8px; }
-  .ctrl-btn { background: rgba(255,255,255,.08); border: 1.5px solid transparent; border-radius: 8px; color: var(--text); width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .15s, border-color .15s; }
-  .ctrl-btn:hover { background: rgba(255,255,255,.15); }
-  .ctrl-btn:focus, .ctrl-btn.focused { outline: none; border-color: var(--accent); box-shadow: var(--focus-ring); background: rgba(0,212,255,.12); }
-  #vol-slider { -webkit-appearance: none; appearance: none; width: 85px; height: 5px; background: rgba(255,255,255,.18); border-radius: 3px; outline: none; cursor: pointer; }
-  #vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%; background: var(--text); cursor: pointer; }
-  #vol-slider:focus { box-shadow: var(--focus-ring); outline: none; }
+  #controls{position:absolute;bottom:0;left:0;right:0;padding:14px 32px 18px;background:linear-gradient(0deg,rgba(0,0,0,.92) 0%,transparent 100%);display:flex;flex-direction:column;gap:9px;opacity:0;transition:opacity .3s;z-index:30;}
+  #controls.visible{opacity:1;}
+  #progress-wrap{display:flex;align-items:center;gap:10px;}
+  #progress{flex:1;-webkit-appearance:none;appearance:none;height:5px;background:rgba(255,255,255,.18);border-radius:3px;outline:none;cursor:pointer;}
+  #progress::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--accent);cursor:pointer;}
+  #progress:focus{box-shadow:var(--focus-ring);}
+  .time-label{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0;min-width:38px;}
+  .ctrl-row{display:flex;align-items:center;justify-content:space-between;}
+  .ctrl-left,.ctrl-right{display:flex;align-items:center;gap:8px;}
+  .ctrl-btn{background:rgba(255,255,255,.08);border:1.5px solid transparent;border-radius:8px;color:var(--text);width:42px;height:42px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s;}
+  .ctrl-btn:hover{background:rgba(255,255,255,.15);}
+  .ctrl-btn:focus,.ctrl-btn.focused{outline:none;border-color:var(--accent);box-shadow:var(--focus-ring);background:rgba(0,212,255,.12);}
+  #vol-slider{-webkit-appearance:none;appearance:none;width:85px;height:5px;background:rgba(255,255,255,.18);border-radius:3px;outline:none;cursor:pointer;}
+  #vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--text);cursor:pointer;}
+
+  /* YT NOTE */
+  #yt-note{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-size:12px;color:var(--muted);text-align:center;display:none;z-index:35;white-space:nowrap;}
+  #yt-note.show{display:block;}
 
   /* FOOTER */
-  footer { display: flex; align-items: center; justify-content: space-between; padding: 8px 32px; border-top: 1px solid var(--border); background: var(--surface); }
-  .footer-hint { font-size: 11px; color: var(--muted); display: flex; gap: 14px; flex-wrap: wrap; }
-  .hint-item { display: flex; align-items: center; gap: 4px; }
-  .kbd { background: var(--panel); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 10px; font-weight: 600; color: var(--text); }
-  .history-list { display: flex; gap: 7px; align-items: center; overflow: hidden; max-width: 55vw; }
-  .history-label { font-size: 11px; color: var(--muted); flex-shrink: 0; }
-  .hist-chip { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; font-size: 11px; color: var(--muted); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; transition: border-color .15s, color .15s; }
-  .hist-chip:hover, .hist-chip.focused { border-color: var(--accent); color: var(--text); }
+  footer{display:flex;align-items:center;justify-content:space-between;padding:8px 32px;border-top:1px solid var(--border);background:var(--surface);}
+  .footer-hint{font-size:11px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;}
+  .hint-item{display:flex;align-items:center;gap:4px;}
+  .kbd{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:10px;font-weight:600;color:var(--text);}
+  .history-list{display:flex;gap:7px;align-items:center;overflow:hidden;max-width:55vw;}
+  .history-label{font-size:11px;color:var(--muted);flex-shrink:0;}
+  .hist-chip{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--muted);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;transition:border-color .15s,color .15s;}
+  .hist-chip:hover,.hist-chip.focused{border-color:var(--accent);color:var(--text);}
 
-  :fullscreen footer, :fullscreen header, :fullscreen #proxy-bar { display: none; }
-  :fullscreen #controls { padding-bottom: 28px; }
+  :fullscreen footer,:fullscreen header,:fullscreen #proxy-bar{display:none;}
+  :fullscreen #controls{padding-bottom:28px;}
 </style>
 </head>
 <body>
 <div id="app">
-
   <header>
-    <div class="logo">
-      <div class="logo-dot"></div>
-      StreamPlay
-    </div>
+    <div class="logo"><div class="logo-dot"></div>StreamPlay</div>
     <div class="url-bar">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-      <input id="url-input" type="text" placeholder="YouTube, FutbolLibre, m3u8, mp4, cualquier link…" tabindex="1" autocomplete="off" autocorrect="off" spellcheck="false" />
+      <input id="url-input" type="text" placeholder="YouTube, FutbolLibre, m3u8, mp4…" tabindex="1" autocomplete="off" autocorrect="off" spellcheck="false"/>
     </div>
     <button id="play-btn" tabindex="2">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -139,13 +139,16 @@
 
   <div id="proxy-bar">
     <span class="proxy-label">Proxy:</span>
-    <input id="proxy-input" type="text" placeholder="https://tu-app.onrender.com" tabindex="0" autocomplete="off" />
-    <div id="proxy-status" title="Estado del proxy"></div>
+    <input id="proxy-input" type="text" placeholder="https://botdiscord-aj0e.onrender.com" tabindex="0" autocomplete="off"/>
+    <div id="proxy-status"></div>
   </div>
 
   <main id="main">
-    <div id="video-wrap">
-      <video id="player" tabindex="-1" playsinline></video>
+    <div id="video-wrap"><video id="player" tabindex="-1" playsinline></video></div>
+
+    <!-- YouTube iframe player -->
+    <div id="yt-wrap">
+      <iframe id="yt-frame" allowfullscreen allow="autoplay; encrypted-media"></iframe>
     </div>
 
     <div id="placeholder">
@@ -153,28 +156,28 @@
         <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
       </div>
       <div class="ph-title">Pega un link y dale Reproducir</div>
-      <div class="ph-sub">El proxy resuelve YouTube, FutbolLibre, IPTV y streams con token automáticamente.</div>
+      <div class="ph-sub">Soporta YouTube, FutbolLibre, IPTV, HLS, MP4 y streams con token.</div>
       <div class="format-pills">
-        <span class="pill">YouTube</span>
-        <span class="pill">FutbolLibre</span>
+        <span class="pill">▶ YouTube</span>
+        <span class="pill">⚽ FutbolLibre</span>
         <span class="pill">HLS .m3u8</span>
         <span class="pill">MPEG-DASH</span>
-        <span class="pill">MP4 directo</span>
+        <span class="pill">MP4</span>
         <span class="pill">IPTV</span>
-        <span class="pill">Streams con token</span>
       </div>
     </div>
 
     <div id="resolving">
       <div class="spin-ring"></div>
       <div class="res-text" id="res-text">Resolviendo stream…</div>
-      <div class="res-sub" id="res-sub">Extrayendo URL reproducible</div>
+      <div class="res-sub" id="res-sub">Contactando proxy</div>
     </div>
 
     <div id="spinner"><div class="spin-ring"></div></div>
     <div id="error-toast"></div>
     <div id="success-toast"></div>
     <div id="status-badge"><div class="dot" id="status-dot"></div><span id="status-text">—</span></div>
+    <div id="yt-note">YouTube usa su player nativo · usa el remote del Fire TV normalmente</div>
 
     <div id="controls">
       <div id="progress-wrap">
@@ -184,14 +187,14 @@
       </div>
       <div class="ctrl-row">
         <div class="ctrl-left">
-          <button class="ctrl-btn" id="btn-rwd" tabindex="3" title="-10s">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/><text x="8" y="14" font-size="5.5" fill="currentColor" font-family="sans-serif" font-weight="bold">10</text></svg>
+          <button class="ctrl-btn" id="btn-rwd" tabindex="3">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
           </button>
           <button class="ctrl-btn" id="btn-play" tabindex="4">
             <svg id="play-icon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
           </button>
-          <button class="ctrl-btn" id="btn-fwd" tabindex="5" title="+10s">
-            <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M12.01 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/><text x="8" y="14" font-size="5.5" fill="currentColor" font-family="sans-serif" font-weight="bold">10</text></svg>
+          <button class="ctrl-btn" id="btn-fwd" tabindex="5">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M12.01 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/></svg>
           </button>
           <button class="ctrl-btn" id="btn-mute" tabindex="6">
             <svg id="vol-icon" width="19" height="19" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0014 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
@@ -215,20 +218,15 @@
       <span class="hint-item"><span class="kbd">F</span> Fullscreen</span>
       <span class="hint-item"><span class="kbd">M</span> Mute</span>
     </div>
-    <div class="history-list" id="history-bar">
-      <span class="history-label">Recientes:</span>
-    </div>
+    <div class="history-list" id="history-bar"><span class="history-label">Recientes:</span></div>
   </footer>
-
 </div>
 
 <script>
-// ─── CONFIG ───────────────────────────────────────────────────────────────────
 const PROXY_KEY = 'sp_proxy_url';
 const HISTORY_KEY = 'sp_history';
 let PROXY_BASE = localStorage.getItem(PROXY_KEY) || '';
 
-// ─── ELEMENTS ─────────────────────────────────────────────────────────────────
 const video       = document.getElementById('player');
 const urlInput    = document.getElementById('url-input');
 const playBtn     = document.getElementById('play-btn');
@@ -257,23 +255,31 @@ const tCur        = document.getElementById('t-cur');
 const tDur        = document.getElementById('t-dur');
 const btnFs       = document.getElementById('btn-fs');
 const historyBar  = document.getElementById('history-bar');
+const ytWrap      = document.getElementById('yt-wrap');
+const ytFrame     = document.getElementById('yt-frame');
+const ytNote      = document.getElementById('yt-note');
 
-// ─── STATE ────────────────────────────────────────────────────────────────────
 const state = {
   hls: null, dash: null,
   hideTimer: null,
   history: JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'),
+  mode: 'video', // 'video' | 'youtube'
 };
 
-// ─── PROXY SETUP ──────────────────────────────────────────────────────────────
-proxyInput.value = PROXY_BASE;
+const ICONS = {
+  play:   `<path d="M8 5v14l11-7z"/>`,
+  pause:  `<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>`,
+  volOn:  `<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0014 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>`,
+  volOff: `<path d="M16.5 12A4.5 4.5 0 0014 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 003.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>`,
+};
 
+// ── PROXY ─────────────────────────────────────────────────────────────────────
+proxyInput.value = PROXY_BASE;
 proxyInput.addEventListener('change', async () => {
   PROXY_BASE = proxyInput.value.trim().replace(/\/$/, '');
   localStorage.setItem(PROXY_KEY, PROXY_BASE);
   await pingProxy();
 });
-
 async function pingProxy() {
   if (!PROXY_BASE) { proxyStatus.className = ''; return; }
   try {
@@ -283,112 +289,120 @@ async function pingProxy() {
 }
 pingProxy();
 
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
-function showError(msg, dur = 5000) {
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function showError(msg, dur=5000) {
   errorToast.textContent = msg;
   errorToast.classList.add('show');
   spinner.classList.remove('show');
   resolving.classList.remove('show');
   setTimeout(() => errorToast.classList.remove('show'), dur);
 }
-
 function showSuccess(msg) {
   successToast.textContent = msg;
   successToast.classList.add('show');
   setTimeout(() => successToast.classList.remove('show'), 2500);
 }
-
 function fmt(s) {
-  if (!isFinite(s) || s < 0) return '—';
-  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = Math.floor(s%60);
-  return h ? `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}` : `${m}:${String(sec).padStart(2,'0')}`;
+  if (!isFinite(s)||s<0) return '—';
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=Math.floor(s%60);
+  return h?`${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`:`${m}:${String(sec).padStart(2,'0')}`;
 }
+function isM3u8(url){return /\.m3u8?(\?|$)/i.test(url);}
+function isMpd(url){return /\.mpd(\?|$)/i.test(url);}
+function isYT(url){return /youtube\.com|youtu\.be/i.test(url);}
+function isNative(url){return /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url);}
 
-function isM3u8(url) { return /\.m3u8?(\?|$)/i.test(url); }
-function isMpd(url)  { return /\.mpd(\?|$)/i.test(url); }
-function isYT(url)   { return /youtube\.com|youtu\.be/i.test(url); }
-function isNative(url) { return /\.(mp4|webm|ogg|mov|avi)(\?|$)/i.test(url); }
-
-// ─── DESTROY PLAYERS ──────────────────────────────────────────────────────────
-function destroyPlayers() {
-  if (state.hls)  { state.hls.destroy(); state.hls = null; }
-  if (state.dash) { state.dash.reset();  state.dash = null; }
+// ── DESTROY ───────────────────────────────────────────────────────────────────
+function destroyAll() {
+  if (state.hls)  { state.hls.destroy();  state.hls = null; }
+  if (state.dash) { state.dash.reset();   state.dash = null; }
   video.pause();
   video.removeAttribute('src');
   video.load();
+  // Cerrar YouTube
+  ytFrame.src = '';
+  ytWrap.classList.remove('show');
+  ytNote.classList.remove('show');
+  state.mode = 'video';
 }
 
-// ─── PLAY STREAM ──────────────────────────────────────────────────────────────
+// ── PLAY YOUTUBE (iframe nativo) ──────────────────────────────────────────────
+function playYouTube(videoId) {
+  destroyAll();
+  placeholder.classList.add('hidden');
+  state.mode = 'youtube';
+
+  // Embed con autoplay y sin anuncios intrusivos
+  ytFrame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+  ytWrap.classList.add('show');
+  ytNote.classList.add('show');
+  setTimeout(() => ytNote.classList.remove('show'), 4000);
+
+  statusDot.className = 'dot yt';
+  statusText.textContent = 'YOUTUBE';
+  statusBadge.classList.add('show');
+  setTimeout(() => statusBadge.classList.remove('show'), 3000);
+  showSuccess('Abriendo YouTube ✓');
+}
+
+// ── PLAY STREAM ───────────────────────────────────────────────────────────────
 function playStream(url, type) {
-  destroyPlayers();
+  destroyAll();
   placeholder.classList.add('hidden');
   spinner.classList.add('show');
+  state.mode = 'video';
 
   const fullUrl = url.startsWith('/') ? PROXY_BASE + url : url;
 
   if (type === 'hls' || isM3u8(url)) {
     if (Hls.isSupported()) {
-      const hls = new Hls({ enableWorker: true, lowLatencyMode: true });
+      const hls = new Hls({ enableWorker: true, lowLatencyMode: true, backBufferLength: 30 });
       state.hls = hls;
       hls.loadSource(fullUrl);
       hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
-      hls.on(Hls.Events.ERROR, (_, d) => {
-        if (d.fatal) showError('Error HLS: ' + (d.details || 'stream caído'));
-      });
+      hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
+      hls.on(Hls.Events.ERROR, (_, d) => { if (d.fatal) showError('Error HLS: ' + (d.details||'stream caído')); });
     } else {
-      // Safari nativo soporta HLS
       video.src = fullUrl;
-      video.play().catch(() => {});
+      video.play().catch(()=>{});
     }
   } else if (type === 'dash' || isMpd(url)) {
-    const player = dashjs.MediaPlayer().create();
-    state.dash = player;
-    player.initialize(video, fullUrl, true);
-    player.on(dashjs.MediaPlayer.events.ERROR, e =>
-      showError('Error DASH: ' + (e.error?.message || 'stream no disponible')));
+    const p = dashjs.MediaPlayer().create();
+    state.dash = p;
+    p.initialize(video, fullUrl, true);
+    p.on(dashjs.MediaPlayer.events.ERROR, e => showError('Error DASH: '+(e.error?.message||'no disponible')));
   } else {
-    // mp4, webm, direct
     video.src = fullUrl;
-    video.play().catch(() => {});
+    video.play().catch(()=>{});
   }
 }
 
-// ─── MAIN LOAD FUNCTION ───────────────────────────────────────────────────────
+// ── MAIN LOAD ─────────────────────────────────────────────────────────────────
 async function loadURL(rawUrl) {
   const url = rawUrl.trim();
   if (!url) return;
 
-  // Caso 1: link directo de m3u8 sin proxy
-  if (isM3u8(url) && !isYT(url)) {
-    if (PROXY_BASE) {
-      // Pasar por proxy para resolver CORS/Referer
-      startResolve('Cargando stream HLS…', 'Aplicando proxy para CORS');
-      playStream(`/proxy/m3u8?url=${encodeURIComponent(url)}`, 'hls');
-      resolving.classList.remove('show');
-    } else {
-      playStream(url, 'hls');
-    }
+  // m3u8 directo sin proxy
+  if (isM3u8(url) && !PROXY_BASE) {
+    playStream(url, 'hls');
     saveHistory(url);
     return;
   }
-
-  // Caso 2: mp4 directo sin proxy
+  // mp4 directo sin proxy
   if (isNative(url) && !PROXY_BASE) {
     playStream(url, 'mp4');
     saveHistory(url);
     return;
   }
-
-  // Caso 3: cualquier cosa → necesita proxy
+  // Necesita proxy
   if (!PROXY_BASE) {
-    showError('Configura la URL del proxy arriba para reproducir este tipo de link');
+    showError('Configura la URL del proxy arriba primero');
     return;
   }
 
   startResolve(
-    isYT(url) ? 'Extrayendo stream de YouTube…' : 'Resolviendo stream…',
-    isYT(url) ? 'Usando yt-dlp en el servidor' : 'Buscando URL reproducible'
+    isYT(url) ? 'Preparando YouTube…' : 'Resolviendo stream…',
+    isYT(url) ? 'Extrayendo video ID' : 'Buscando URL reproducible'
   );
   playBtn.disabled = true;
 
@@ -406,14 +420,18 @@ async function loadURL(rawUrl) {
       return;
     }
 
-    showSuccess('Stream encontrado ✓');
-    playStream(data.url, data.type);
+    if (data.type === 'youtube') {
+      playYouTube(data.videoId);
+    } else {
+      showSuccess('Stream encontrado ✓');
+      playStream(data.url, data.type);
+    }
     saveHistory(url);
 
   } catch (err) {
     playBtn.disabled = false;
     resolving.classList.remove('show');
-    showError('Error conectando al proxy: ' + (err.message || 'timeout'));
+    showError('Error conectando al proxy: ' + (err.message||'timeout'));
     placeholder.classList.remove('hidden');
   }
 }
@@ -425,119 +443,111 @@ function startResolve(title, sub) {
   resolving.classList.add('show');
 }
 
-// ─── HISTORY ──────────────────────────────────────────────────────────────────
+// ── HISTORY ───────────────────────────────────────────────────────────────────
 function saveHistory(url) {
-  state.history = [url, ...state.history.filter(u => u !== url)].slice(0, 6);
+  state.history = [url, ...state.history.filter(u=>u!==url)].slice(0,6);
   try { localStorage.setItem(HISTORY_KEY, JSON.stringify(state.history)); } catch(e) {}
   renderHistory();
 }
-
 function renderHistory() {
-  historyBar.querySelectorAll('.hist-chip').forEach(c => c.remove());
+  historyBar.querySelectorAll('.hist-chip').forEach(c=>c.remove());
   state.history.forEach(url => {
     const chip = document.createElement('button');
     chip.className = 'hist-chip';
     chip.tabIndex = 10;
-    chip.textContent = url.replace(/^https?:\/\//, '').slice(0, 30) + (url.length > 32 ? '…' : '');
+    chip.textContent = url.replace(/^https?:\/\//,'').slice(0,30)+(url.length>32?'…':'');
     chip.title = url;
     chip.onclick = () => { urlInput.value = url; loadURL(url); };
     historyBar.appendChild(chip);
   });
 }
 
-// ─── VIDEO EVENTS ─────────────────────────────────────────────────────────────
-video.addEventListener('waiting',  () => spinner.classList.add('show'));
-video.addEventListener('canplay',  () => spinner.classList.remove('show'));
-video.addEventListener('playing',  () => {
+// ── VIDEO EVENTS ──────────────────────────────────────────────────────────────
+video.addEventListener('waiting',  ()=>spinner.classList.add('show'));
+video.addEventListener('canplay',  ()=>spinner.classList.remove('show'));
+video.addEventListener('playing',  ()=>{
   spinner.classList.remove('show');
   playIcon.innerHTML = ICONS.pause;
   const live = video.duration === Infinity;
-  statusDot.className = 'dot ' + (live ? 'live' : 'vod');
-  statusText.textContent = live ? 'EN VIVO' : 'VIDEO';
+  statusDot.className = 'dot '+(live?'live':'vod');
+  statusText.textContent = live?'EN VIVO':'VIDEO';
   statusBadge.classList.add('show');
-  setTimeout(() => statusBadge.classList.remove('show'), 3000);
+  setTimeout(()=>statusBadge.classList.remove('show'),3000);
 });
-video.addEventListener('pause',  () => { playIcon.innerHTML = ICONS.play; });
-video.addEventListener('ended',  () => { playIcon.innerHTML = ICONS.play; });
-video.addEventListener('error',  () => {
-  const msgs = ['', 'Cancelado', 'Error de red', 'Error de decodificación', 'Formato no soportado'];
-  showError('Error de video: ' + (msgs[video.error?.code] || 'desconocido'));
+video.addEventListener('pause', ()=>{ playIcon.innerHTML = ICONS.play; });
+video.addEventListener('ended', ()=>{ playIcon.innerHTML = ICONS.play; });
+video.addEventListener('error', ()=>{
+  const msgs=['','Cancelado','Error de red','Error de decodificación','Formato no soportado'];
+  showError('Error: '+(msgs[video.error?.code]||'desconocido'));
   placeholder.classList.remove('hidden');
 });
-video.addEventListener('timeupdate', () => {
+video.addEventListener('timeupdate', ()=>{
   if (!isFinite(video.duration)) return;
-  progress.value = (video.currentTime / video.duration) * 100;
+  progress.value = (video.currentTime/video.duration)*100;
   tCur.textContent = fmt(video.currentTime);
 });
-video.addEventListener('durationchange', () => {
-  tDur.textContent = video.duration === Infinity ? 'LIVE' : fmt(video.duration);
-  progress.disabled = video.duration === Infinity;
+video.addEventListener('durationchange', ()=>{
+  tDur.textContent = video.duration===Infinity?'LIVE':fmt(video.duration);
+  progress.disabled = video.duration===Infinity;
 });
 
-// ─── CONTROLS VISIBILITY ──────────────────────────────────────────────────────
+// ── CONTROLS VIS ──────────────────────────────────────────────────────────────
 function showControls() {
+  if (state.mode === 'youtube') return; // YouTube tiene sus propios controles
   controls.classList.add('visible');
   clearTimeout(state.hideTimer);
-  if (!video.paused) state.hideTimer = setTimeout(() => controls.classList.remove('visible'), 3500);
+  if (!video.paused) state.hideTimer = setTimeout(()=>controls.classList.remove('visible'),3500);
 }
 document.getElementById('main').addEventListener('mousemove', showControls);
 document.getElementById('main').addEventListener('click', showControls);
 
-// ─── BUTTON ACTIONS ───────────────────────────────────────────────────────────
-playBtn.addEventListener('click', () => loadURL(urlInput.value));
-urlInput.addEventListener('keydown', e => { if (e.key === 'Enter') loadURL(urlInput.value); });
-btnPlay.addEventListener('click', () => { video.paused ? video.play() : video.pause(); showControls(); });
-btnRwd.addEventListener('click',  () => { video.currentTime = Math.max(0, video.currentTime - 10); showControls(); });
-btnFwd.addEventListener('click',  () => { video.currentTime = Math.min(video.duration || 0, video.currentTime + 10); showControls(); });
-btnMute.addEventListener('click', () => {
-  video.muted = !video.muted;
-  volIcon.innerHTML = video.muted ? ICONS.volOff : ICONS.volOn;
+// ── BUTTONS ───────────────────────────────────────────────────────────────────
+playBtn.addEventListener('click', ()=>loadURL(urlInput.value));
+urlInput.addEventListener('keydown', e=>{if(e.key==='Enter') loadURL(urlInput.value);});
+btnPlay.addEventListener('click', ()=>{ video.paused?video.play():video.pause(); showControls(); });
+btnRwd.addEventListener('click', ()=>{ video.currentTime=Math.max(0,video.currentTime-10); showControls(); });
+btnFwd.addEventListener('click', ()=>{ video.currentTime=Math.min(video.duration||0,video.currentTime+10); showControls(); });
+btnMute.addEventListener('click', ()=>{
+  video.muted=!video.muted;
+  volIcon.innerHTML = video.muted?ICONS.volOff:ICONS.volOn;
 });
-volSlider.addEventListener('input', () => { video.volume = parseFloat(volSlider.value); });
-progress.addEventListener('input', () => {
-  if (isFinite(video.duration)) video.currentTime = (progress.value / 100) * video.duration;
-});
+volSlider.addEventListener('input', ()=>{ video.volume=parseFloat(volSlider.value); });
+progress.addEventListener('input', ()=>{ if(isFinite(video.duration)) video.currentTime=(progress.value/100)*video.duration; });
 btnFs.addEventListener('click', toggleFs);
-
 function toggleFs() {
-  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
-  else document.exitFullscreen().catch(() => {});
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+  else document.exitFullscreen().catch(()=>{});
 }
 
-// ─── KEYBOARD / FIRE TV REMOTE ────────────────────────────────────────────────
-document.addEventListener('keydown', e => {
-  const inInput = document.activeElement === urlInput || document.activeElement === proxyInput;
+// ── KEYBOARD / FIRE TV REMOTE ─────────────────────────────────────────────────
+document.addEventListener('keydown', e=>{
+  const inInput = document.activeElement===urlInput||document.activeElement===proxyInput;
+  if (state.mode==='youtube') {
+    if (e.key==='Escape'||e.key==='Backspace') destroyAll(), placeholder.classList.remove('hidden');
+    return;
+  }
   switch(e.key) {
-    case ' ':            if (!inInput) { e.preventDefault(); btnPlay.click(); } break;
-    case 'f': case 'F': if (!inInput) toggleFs(); break;
-    case 'm': case 'M': if (!inInput) btnMute.click(); break;
-    case 'ArrowRight':  if (!inInput) { e.preventDefault(); btnFwd.click(); } break;
-    case 'ArrowLeft':   if (!inInput) { e.preventDefault(); btnRwd.click(); } break;
-    case 'ArrowUp':     if (!inInput) { e.preventDefault(); video.volume = Math.min(1, video.volume + 0.1); volSlider.value = video.volume; } break;
-    case 'ArrowDown':   if (!inInput) { e.preventDefault(); video.volume = Math.max(0, video.volume - 0.1); volSlider.value = video.volume; } break;
-    case 'MediaPlayPause':   e.preventDefault(); btnPlay.click(); break;
-    case 'MediaFastForward': e.preventDefault(); btnFwd.click(); break;
-    case 'MediaRewind':      e.preventDefault(); btnRwd.click(); break;
+    case ' ':            if(!inInput){e.preventDefault();btnPlay.click();}break;
+    case 'f':case 'F':  if(!inInput) toggleFs();break;
+    case 'm':case 'M':  if(!inInput) btnMute.click();break;
+    case 'ArrowRight':  if(!inInput){e.preventDefault();btnFwd.click();}break;
+    case 'ArrowLeft':   if(!inInput){e.preventDefault();btnRwd.click();}break;
+    case 'ArrowUp':     if(!inInput){e.preventDefault();video.volume=Math.min(1,video.volume+0.1);volSlider.value=video.volume;}break;
+    case 'ArrowDown':   if(!inInput){e.preventDefault();video.volume=Math.max(0,video.volume-0.1);volSlider.value=video.volume;}break;
+    case 'MediaPlayPause':   e.preventDefault();btnPlay.click();break;
+    case 'MediaFastForward': e.preventDefault();btnFwd.click();break;
+    case 'MediaRewind':      e.preventDefault();btnRwd.click();break;
   }
   showControls();
 });
 
-// ─── ICONS ────────────────────────────────────────────────────────────────────
-const ICONS = {
-  play:   `<path d="M8 5v14l11-7z"/>`,
-  pause:  `<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>`,
-  volOn:  `<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0014 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>`,
-  volOff: `<path d="M16.5 12A4.5 4.5 0 0014 7.97v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 003.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>`,
-};
-
-// ─── INIT ─────────────────────────────────────────────────────────────────────
+// ── INIT ──────────────────────────────────────────────────────────────────────
 renderHistory();
-urlInput.addEventListener('focus', async () => {
+urlInput.addEventListener('focus', async()=>{
   try {
-    const text = await navigator.clipboard.readText();
-    if (text && (text.startsWith('http') || text.startsWith('rtsp')) && !urlInput.value)
-      urlInput.value = text;
-  } catch(e) {}
+    const t = await navigator.clipboard.readText();
+    if(t&&(t.startsWith('http')||t.startsWith('rtsp'))&&!urlInput.value) urlInput.value=t;
+  } catch(e){}
 });
 </script>
 </body>
